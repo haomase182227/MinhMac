@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nhật Ký Nhỏ 🌸 | Em Chỉ Thích Anh</title>
+    <meta name="description" content="Quyển sổ nhật ký tình yêu lật trang dễ thương với những tâm tư ngọt ngào dành riêng cho bạn." />
+    
+    <!-- Google Fonts for cute handwriting & soft modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Itim&family=Patrick+Hand&family=Quicksand:wght@400;500;600;700&family=Comfortaa:wght@400;600;700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Audio element khởi tạo sớm nhất có thể -->
+    <audio id="global-bg-music" src="/music.mp3" loop preload="auto" autoplay playsinline></audio>
+
+    <script>
+      (function() {
+        const audio = document.getElementById('global-bg-music');
+        if (!audio) return;
+
+        audio.volume = 0.75;
+
+        // Cố gắng phát ngay lập tức không cần người dùng thao tác
+        function tryAutoplay() {
+          const promise = audio.play();
+          if (promise !== undefined) {
+            promise.then(function() {
+              cleanup();
+            }).catch(function() {
+              // Nếu trình duyệt yêu cầu cử chỉ ban đầu, tự động phát ngay khi di chuột / chạm nhẹ
+              addPassiveTriggers();
+            });
+          }
+        }
+
+        function onPassiveAction() {
+          audio.play().then(cleanup).catch(function() {});
+        }
+
+        const events = ['mousemove', 'pointermove', 'touchstart', 'wheel', 'scroll', 'keydown', 'click'];
+
+        function addPassiveTriggers() {
+          events.forEach(function(evt) {
+            window.addEventListener(evt, onPassiveAction, { once: true, passive: true });
+          });
+        }
+
+        function cleanup() {
+          events.forEach(function(evt) {
+            window.removeEventListener(evt, onPassiveAction);
+          });
+        }
+
+        tryAutoplay();
+        addPassiveTriggers();
+      })();
+    </script>
+
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
