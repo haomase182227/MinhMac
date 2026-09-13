@@ -69,7 +69,7 @@ export default function PageContent({ pageIndex, onNext, onPrev, onReset }) {
       // Trang 1: "Em không thích thế giới này"
       return (
         <div className="page-sheet">
-          <div className="washi-tape top-center">🌸 Nhật Ký Nhỏ 🌸</div>
+          <div className="washi-tape top-center">🌸 Phiếu Khảo Sát 🌸</div>
 
           <div className="page-meta">
             <div className="note-badge">Trang 01</div>
