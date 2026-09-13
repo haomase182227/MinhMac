@@ -73,15 +73,21 @@ export default function PageContent({ pageIndex, onNext, onPrev, onReset }) {
 
           <div className="page-meta">
             <div className="note-badge">Trang 01</div>
-            <div className="page-date">☁️</div>
+            <div className="page-date">✨</div>
           </div>
 
           <div className="page-center">
-            <div className="illustration-box">
-              <div className="doodle-avatar">🌧️</div>
+            {/* Tấm ảnh phong cách polaroid tinh tế kẹp washi tape */}
+            <div className="polaroid-frame" title="Kỷ niệm đẹp ✨">
+              <div className="polaroid-tape" />
+              <img
+                src="/photo.jpg"
+                alt="Em không thích thế giới này"
+                className="polaroid-img"
+              />
             </div>
 
-            <h2 className="page-main-text">
+            <h2 className="page-main-text" style={{ marginTop: 12 }}>
               Em không thích thế giới này
             </h2>
           </div>
