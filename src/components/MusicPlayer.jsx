@@ -1,15 +1,25 @@
 import { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, Upload, Music, Disc, Sparkles, X, Link as LinkIcon, RotateCcw } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Upload, Music, X, RotateCcw } from 'lucide-react';
 import { playPopSound } from '../utils/soundEffects';
 import { startMusicBox, stopMusicBox } from '../utils/musicBox';
 
 export default function MusicPlayer() {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(() => {
+    if (typeof document !== 'undefined') {
+      const audio = document.getElementById('global-bg-music');
+      return audio ? !audio.paused : false;
+    }
+    return false;
+  });
   const [isMuted, setIsMuted] = useState(false);
   const [volume, setVolume] = useState(0.7);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [audioSourceType, setAudioSourceType] = useState('file'); // 'file' | 'synth' | 'custom'
-  const [songTitle, setSongTitle] = useState("WENDY - Daydream (OST) 🌸");
+  const [audioSourceType, setAudioSourceType] = useState(() => {
+    return localStorage.getItem('user_bg_music_url') ? 'custom' : 'file';
+  });
+  const [songTitle, setSongTitle] = useState(() => {
+    return localStorage.getItem('user_bg_music_title') || 'WENDY - Daydream (OST) 🌸';
+  });
   const [customUrlInput, setCustomUrlInput] = useState('');
   const [audioError, setAudioError] = useState('');
 
@@ -22,17 +32,9 @@ export default function MusicPlayer() {
     audioRef.current = audio;
 
     const savedAudio = localStorage.getItem('user_bg_music_url');
-    const savedTitle = localStorage.getItem('user_bg_music_title');
-
-    if (savedAudio) {
+    if (savedAudio && audio.src !== savedAudio) {
       audio.src = savedAudio;
-      setAudioSourceType('custom');
-      setSongTitle(savedTitle || 'Bài hát của bạn 🎵');
       audio.play().catch(() => {});
-    }
-
-    if (!audio.paused) {
-      setIsPlaying(true);
     }
 
     const handlePlay = () => setIsPlaying(true);
@@ -78,7 +80,6 @@ export default function MusicPlayer() {
           })
           .catch((err) => {
             console.warn('Autoplay block or audio load error:', err);
-            // Fallback to synth if custom audio fails
             startMusicBox();
             setAudioSourceType('synth');
             setSongTitle('Hộp nhạc ru tình yêu (Tự động chuyển)');
@@ -121,7 +122,7 @@ export default function MusicPlayer() {
       audioRef.current.play().then(() => {
         setIsPlaying(true);
         setAudioError('');
-      }).catch((err) => {
+      }).catch(() => {
         setAudioError('Không thể mở link nhạc này (kiểm tra lại URL direct .mp3).');
       });
     }
@@ -217,7 +218,7 @@ export default function MusicPlayer() {
 
             <div className="modal-body">
               <p style={{ fontSize: '0.92rem', color: 'var(--ink-secondary)', marginBottom: 18, lineHeight: 1.5 }}>
-                Bạn có thể tự chọn bất kỳ bài hát ngọt ngào nào (ví dụ: bài hát kỉ niệm của hai bạn, nhạc tỏ tình, lofi...) để phát trong lúc lật xem nhật ký nhé!
+                Bạn có thể tự chọn bất kỳ bài hát ngọt ngào nào để phát trong lúc lật xem nhật ký nhé!
               </p>
 
               {audioError && (
@@ -225,6 +226,35 @@ export default function MusicPlayer() {
                   {audioError}
                 </div>
               )}
+
+              {/* Volume Slider */}
+              <div style={{
+                marginBottom: 16,
+                padding: '10px 14px',
+                background: '#FFF9FA',
+                borderRadius: 14,
+                border: '1px solid #FFE0E6',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 12,
+              }}>
+                <span style={{ fontSize: '0.88rem', color: 'var(--ink-primary)', fontWeight: 600 }}>Âm lượng:</span>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={isMuted ? 0 : volume}
+                  onChange={(e) => {
+                    setVolume(parseFloat(e.target.value));
+                    if (isMuted) setIsMuted(false);
+                  }}
+                  style={{ flex: 1, accentColor: 'var(--accent-pink)' }}
+                />
+                <span style={{ fontSize: '0.85rem', color: 'var(--accent-pink)', fontWeight: 'bold', width: 36 }}>
+                  {isMuted ? '0%' : `${Math.round(volume * 100)}%`}
+                </span>
+              </div>
 
               {/* Option 1: Upload MP3 from device */}
               <div className="music-opt-card">
@@ -276,19 +306,6 @@ export default function MusicPlayer() {
                     Phát
                   </button>
                 </form>
-              </div>
-
-              {/* Option 3: Guide to place music.mp3 into public folder */}
-              <div className="music-opt-card" style={{ marginTop: 14, background: '#FFF9F0', borderColor: '#FFE0B2' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 6 }}>
-                  <div className="opt-icon-badge">💡</div>
-                  <div>
-                    <h4 style={{ fontSize: '0.95rem', color: '#8A6D3B' }}>Gợi ý: Đặt file vào thư mục dự án</h4>
-                  </div>
-                </div>
-                <p style={{ fontSize: '0.82rem', color: '#6D4C41', lineHeight: 1.5 }}>
-                  Bạn chỉ cần copy bài hát yêu thích và đặt tên là <code>music.mp3</code> bỏ vào thư mục <code>public/</code> của dự án, web sẽ tự động phát bài hát đó vĩnh viễn!
-                </p>
               </div>
 
               {/* Reset to default synth */}

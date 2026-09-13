@@ -46,8 +46,16 @@ export default function App() {
   // Keyboard navigation (Arrow keys)
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'ArrowRight') nextPage();
-      if (e.key === 'ArrowLeft') prevPage();
+      if (e.key === 'ArrowRight' && currentPage < 5) {
+        if (soundEnabled) playPageFlipSound();
+        setCurrentPage((p) => Math.min(p + 1, 5));
+        setPageAnimKey((k) => k + 1);
+      }
+      if (e.key === 'ArrowLeft' && currentPage > 1) {
+        if (soundEnabled) playPageFlipSound();
+        setCurrentPage((p) => Math.max(p - 1, 1));
+        setPageAnimKey((k) => k + 1);
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => {

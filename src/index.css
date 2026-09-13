@@ -1047,5 +1047,16 @@ html, body {
   .cute-music-dock {
     max-width: 210px;
   }
+
+  .polaroid-frame {
+    max-width: 140px;
+    padding: 6px 6px 14px 6px;
+    margin: 2px auto 4px;
+  }
+
+  .polaroid-img {
+    width: 128px;
+    height: 165px;
+  }
 }
 

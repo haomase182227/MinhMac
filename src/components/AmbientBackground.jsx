@@ -1,23 +1,26 @@
-import { useMemo } from 'react';
-
 const ICONS = ['🌸', '✨', '💖', '🧸', '☁️', '🍓', '🎀', '⭐'];
 
-export default function AmbientBackground() {
-  // Generate random positions and timings for 16 floating elements
-  const items = useMemo(() => {
-    return Array.from({ length: 16 }, (_, i) => ({
-      id: i,
-      icon: ICONS[i % ICONS.length],
-      left: `${(i * 6.2 + Math.random() * 4).toFixed(1)}%`,
-      delay: `${(Math.random() * 10).toFixed(1)}s`,
-      duration: `${(12 + Math.random() * 8).toFixed(1)}s`,
-      size: `${(1.2 + Math.random() * 1.2).toFixed(2)}rem`,
-    }));
-  }, []);
+// Pre-computed deterministic floating items (100% pure, no Math.random during render)
+const STATIC_ITEMS = Array.from({ length: 16 }, (_, i) => {
+  const pseudoSeed = (i * 37 + 13) % 100;
+  const pseudoDelay = ((i * 23 + 7) % 80) / 10;
+  const pseudoDuration = 12 + ((i * 19 + 5) % 80) / 10;
+  const pseudoSize = 1.2 + ((i * 29 + 11) % 10) / 10;
 
+  return {
+    id: i,
+    icon: ICONS[i % ICONS.length],
+    left: `${(i * 6.2 + (pseudoSeed % 4)).toFixed(1)}%`,
+    delay: `${pseudoDelay.toFixed(1)}s`,
+    duration: `${pseudoDuration.toFixed(1)}s`,
+    size: `${pseudoSize.toFixed(2)}rem`,
+  };
+});
+
+export default function AmbientBackground() {
   return (
     <div className="ambient-decor" aria-hidden="true">
-      {items.map((item) => (
+      {STATIC_ITEMS.map((item) => (
         <span
           key={item.id}
           className="floating-petal"
